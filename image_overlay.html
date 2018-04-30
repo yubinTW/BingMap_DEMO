@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>loadmapasyncHTML</title>
+        <style type='text/css'>body{margin:0;padding:0;overflow:hidden;font-family:'Segoe UI',Helvetica,Arial,Sans-Serif}</style>
+        <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+        <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key=AnxLJfb5fFrqmeuDvCAXKmchT-y8iNWNjkruCgB4fDCvgJSJ-1f_4gLz_0RJ_5a1'></script>
+        <script type='text/javascript'>
+                var map;
+                var rain_url = 'https://alerts.ncdr.nat.gov.tw/DownLoadNewAssistData.ashx/9';
+                var radar_url = 'https://alerts.ncdr.nat.gov.tw/DownLoadNewAssistData.ashx/8';
+                var ms = Microsoft.Maps;
+                function loadMapScenario() {
+                    map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+                        center: new ms.Location(23.583234, 120.5825975), // 中心點訂在台灣中心
+                        showMapTypeSelector: false, // 不顯示地圖類型選像
+                        showLocateMeButton: false,  // 不顯示讀取現在位置並置中的按鈕
+                        zoom: 8,
+                    });
+                    wms_rain();
+                }
+                
+            
+        </script>
+    </head>
+    <body onload='loadMapScenario();'>
+        <div id='printoutPanel'></div>
+        
+        <div id='myMap' style='width: 80%; height: 80%;'></div>
+
+        <script type="text/javascript">
+            
+
+            var rain_img;
+            var radar_img;
+            var rain_overlay;
+            // WMS圖層套疊，點擊 雨量圖 的事件處理
+            function wms_rain() {
+                let pin = new ms.Pushpin(new ms.Location(25.315, 120.023), {
+                    title: '(25.315, 120.023)'
+                });
+                map.entities.push(pin);
+                pin = new ms.Pushpin(new ms.Location(21.89, 122.005), {
+                    title: '(21.89, 122.005)'
+                });
+                map.entities.push(pin);
+                pin = new ms.Pushpin(new ms.Location(23.6025, 121.014), {
+                    title: 'center'
+                });
+                map.entities.push(pin);
+
+                // Define custom constructor for the overlay 
+                function TopographicOverlay(bounds, image_url, img) {
+                    this.bounds = bounds;
+                    this.img = img;
+                    this.image_url = image_url;
+                }
+                // set prototype to sub-class CustomOverlay
+                TopographicOverlay.prototype = new Microsoft.Maps.CustomOverlay();
+                // implement the onAdd method to set up DOM element, and use setHtmlElement bind it with the overlay
+                TopographicOverlay.prototype.onAdd = function () {
+                    this.img = document.createElement('img');
+                    this.img.src = this.image_url;
+                    //img.id = 'topographicOverlay';
+                    this.img.style.width = '100%';
+                    this.img.style.height = '100%';
+                    this.img.style.position = 'absolute';
+                    this.img.style.opacity = 1;
+                    this.setHtmlElement(this.img);
+                };
+                // implement the onLoad method to perform custom operations of rendering the DOM element
+                TopographicOverlay.prototype.onLoad = function () {
+                    let img = this.img;
+                    repositionOverlay(img);
+                    Microsoft.Maps.Events.addHandler(map, 'viewchange', function () {
+                        repositionOverlay(img);
+                    });
+                };
+                var bounds = Microsoft.Maps.LocationRect.fromCorners(
+                    new Microsoft.Maps.Location(25.315, 120.023), // 西北角落座標
+                    new Microsoft.Maps.Location(21.89, 122.005)); // 東南角落座標
+                
+                // create an instance of the defined custom overlay 
+                var rain_overlay = new TopographicOverlay(bounds, rain_url, rain_img);
+                var radar_overlay = new TopographicOverlay(bounds, radar_url, radar_img);
+                // now we're ready to insert this custom overlay into map layers
+                map.layers.insert(rain_overlay);
+                map.layers.insert(radar_overlay);
+
+                function repositionOverlay(img) {
+                    var topLeft = map.tryLocationToPixel(bounds.getNorthwest(), Microsoft.Maps.PixelReference.control);
+                    var bottomRight = map.tryLocationToPixel(bounds.getSoutheast(), Microsoft.Maps.PixelReference.control);
+                    if (topLeft && bottomRight) {
+                        img.style.left = topLeft.x + 'px';
+                        img.style.top = topLeft.y + 'px';
+                        img.style.width = (bottomRight.x - topLeft.x) + 'px';
+                        img.style.width = (bottomRight.x - topLeft.x) + 'px';
+                        img.style.height = (bottomRight.y - topLeft.y) + 'px';
+                    }
+                }
+                setTimeout(()=>{
+                    console.log('rain_overlay = ', rain_overlay);
+                    console.log('radar_overlay = ', radar_overlay);
+                }, 1000);
+                
+            } // end of wms_rain()
+
+        </script>
+    </body>
+</html>
