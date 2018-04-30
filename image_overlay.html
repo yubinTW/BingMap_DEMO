@@ -76,6 +76,10 @@
                         repositionOverlay(img);
                     });
                 };
+                TopographicOverlay.prototype.setOpacity = function(value){
+                    if(this.img)
+                        this.img.style.opacity = Number(value);
+                }
                 var bounds = Microsoft.Maps.LocationRect.fromCorners(
                     new Microsoft.Maps.Location(25.315, 120.023), // 西北角落座標
                     new Microsoft.Maps.Location(21.89, 122.005)); // 東南角落座標
@@ -98,10 +102,16 @@
                         img.style.height = (bottomRight.y - topLeft.y) + 'px';
                     }
                 }
+
+                // testing
                 setTimeout(()=>{
                     console.log('rain_overlay = ', rain_overlay);
                     console.log('radar_overlay = ', radar_overlay);
                 }, 1000);
+
+                setTimeout(()=>{
+                    radar_overlay.setOpacity(0.2);
+                },3000);
                 
             } // end of wms_rain()
 
