@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>loadmapasyncHTML</title>
+        <style type='text/css'>body{margin:0;padding:0;overflow:hidden;font-family:'Segoe UI',Helvetica,Arial,Sans-Serif}</style>
+        <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+        <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key=AnxLJfb5fFrqmeuDvCAXKmchT-y8iNWNjkruCgB4fDCvgJSJ-1f_4gLz_0RJ_5a1'></script>
+        <script type="text/javascript" src="./measure_line.js"></script>
+
+        <style>
+        /* 把繪圖管理器隱藏 */
+            .drawingBar {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id='printoutPanel'></div>
+        <button onclick="caculateDistance()">Draw Line</button>
+        <button onclick="caculateArea()">Draw Polygon</button>
+        <button onclick="clearDrawing()">Clear Drawing</button>
+        <div id="caculateResult"></div>
+        <div id='myMap' style='width: 95vw; height: 90vh;'></div>
+        <script>
+            window.onload = function () {
+                initMap();
+            }
+        </script>
+    </body>
+</html>

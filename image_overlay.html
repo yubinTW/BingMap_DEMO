@@ -30,9 +30,6 @@
 
         <script type="text/javascript">
             
-
-            var rain_img;
-            var radar_img;
             var rain_overlay;
             // WMS圖層套疊，點擊 雨量圖 的事件處理
             function wms_rain() {
@@ -49,23 +46,21 @@
                 });
                 map.entities.push(pin);
 
+
                 // Define custom constructor for the overlay 
-                function TopographicOverlay(bounds, image_url, img) {
+                function TopographicOverlay(bounds, image_url) {
                     this.bounds = bounds;
-                    this.img = img;
+                    this.img = document.createElement('img');
                     this.image_url = image_url;
                 }
                 // set prototype to sub-class CustomOverlay
                 TopographicOverlay.prototype = new Microsoft.Maps.CustomOverlay();
                 // implement the onAdd method to set up DOM element, and use setHtmlElement bind it with the overlay
-                TopographicOverlay.prototype.onAdd = function () {
-                    this.img = document.createElement('img');
+                TopographicOverlay.prototype.onAdd = function () {                    
                     this.img.src = this.image_url;
-                    //img.id = 'topographicOverlay';
                     this.img.style.width = '100%';
                     this.img.style.height = '100%';
                     this.img.style.position = 'absolute';
-                    this.img.style.opacity = 1;
                     this.setHtmlElement(this.img);
                 };
                 // implement the onLoad method to perform custom operations of rendering the DOM element
@@ -83,11 +78,13 @@
                 var bounds = Microsoft.Maps.LocationRect.fromCorners(
                     new Microsoft.Maps.Location(25.315, 120.023), // 西北角落座標
                     new Microsoft.Maps.Location(21.89, 122.005)); // 東南角落座標
+
                 
                 // create an instance of the defined custom overlay 
-                var rain_overlay = new TopographicOverlay(bounds, rain_url, rain_img);
-                var radar_overlay = new TopographicOverlay(bounds, radar_url, radar_img);
+                var rain_overlay = new TopographicOverlay(bounds, rain_url);
+                var radar_overlay = new TopographicOverlay(bounds, radar_url);
                 // now we're ready to insert this custom overlay into map layers
+                radar_overlay.setOpacity(0.9);
                 map.layers.insert(rain_overlay);
                 map.layers.insert(radar_overlay);
 
@@ -110,9 +107,9 @@
                 }, 1000);
 
                 setTimeout(()=>{
-                    radar_overlay.setOpacity(0.2);
-                },3000);
-                
+                    rain_overlay.setOpacity(0.7);
+                }, 2000);
+                                
             } // end of wms_rain()
 
         </script>
